@@ -1,5 +1,3 @@
-using System;
-
 namespace Simpl.Mobile.Mechanic.Core.Domain;
 
 public class Address
