@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Simpl.Mobile.Mechanic.Api.Endpoints;
 using Simpl.Mobile.Mechanic.Api.HealthChecks;
+using Simpl.Mobile.Mechanic.Core.Mediator;
 using Simpl.Mobile.Mechanic.DataStore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,8 @@ builder.Services.AddTransient<MongoSettings>((a) => mongoSettings);
 
 builder.Services.AddTransient<IMongoHealthChecker, MongoHealthChecker>();
 builder.Services.AddScoped<IDbFactory, DbFactory>();
+
+builder.Services.AddMediator(typeof(Simpl.Mobile.Mechanic.Application.RegisterUser.Handler).Assembly);
 
 #endregion
 
@@ -51,7 +54,7 @@ app.MapHealthChecks("/readyz", new HealthCheckOptions()
 
 #region Endpoints
 
-// HealthEndpoints.Register(app);
+UserEndpoints.Register(app);
 
 #endregion
 
