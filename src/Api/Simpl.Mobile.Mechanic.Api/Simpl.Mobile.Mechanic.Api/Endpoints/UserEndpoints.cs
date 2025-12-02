@@ -10,7 +10,7 @@ public static class UserEndpoints
     app.MapPost("/register", async ([FromBody] Application.Features.RegisterUser.Request request, ISender sender, CancellationToken ct) =>
     {
       var result = await sender.Send(request, ct);
-      return Results.Ok(result.Data?.Message);
+      return Results.Ok(result.Data?.Token);
     });
   }
 }
