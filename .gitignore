@@ -34,6 +34,7 @@ ScaffoldingReadMe.txt
 
 # NuGet Packages
 *.nupkg
+
 # NuGet Symbol Packages
 *.snupkg
 
@@ -56,3 +57,6 @@ nunit-*.xml
 
 # JetBrains
 .idea/
+
+# Mac files
+.DS_Store

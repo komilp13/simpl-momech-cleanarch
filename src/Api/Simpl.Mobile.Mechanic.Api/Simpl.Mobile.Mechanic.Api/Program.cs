@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Simpl.Mobile.Mechanic.Api.Endpoints;
 using Simpl.Mobile.Mechanic.Api.HealthChecks;
-using Simpl.Mobile.Mechanic.Core.Mediator;
 using Simpl.Mobile.Mechanic.DataStore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +16,9 @@ builder.Services.AddHealthChecks()
     .AddCheck<LivenessHealthCheck>("liveness")
     .AddCheck<ReadinessHealthCheck>("readiness");
 
+    // Load dependency chain
+Simpl.Mobile.Mechanic.Application.Startup.Load(builder.Services);
+
 
 #region Register Service Dependencies
 
@@ -24,8 +26,6 @@ builder.Services.AddTransient<MongoSettings>((a) => mongoSettings);
 
 builder.Services.AddTransient<IMongoHealthChecker, MongoHealthChecker>();
 builder.Services.AddScoped<IDbFactory, DbFactory>();
-
-builder.Services.AddMediator(typeof(Simpl.Mobile.Mechanic.Application.RegisterUser.Handler).Assembly);
 
 #endregion
 

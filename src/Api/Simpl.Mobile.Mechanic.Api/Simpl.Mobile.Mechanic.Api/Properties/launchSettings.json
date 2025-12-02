@@ -8,6 +8,7 @@
       "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "MEDIATR_LICENSE_KEY": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ikx1Y2t5UGVubnlTb2Z0d2FyZUxpY2Vuc2VLZXkvYmJiMTNhY2I1OTkwNGQ4OWI0Y2IxYzg1ZjA4OGNjZjkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2x1Y2t5cGVubnlzb2Z0d2FyZS5jb20iLCJhdWQiOiJMdWNreVBlbm55U29mdHdhcmUiLCJleHAiOiIxNzk2MTY5NjAwIiwiaWF0IjoiMTc2NDcwMzc0MCIsImFjY291bnRfaWQiOiIwMTlhZTA4NmJkMWQ3MTE5YmVmMDkxNzI0YTZmMDM4OCIsImN1c3RvbWVyX2lkIjoiY3RtXzAxa2JnOG04eGE2ZmtxZ240NnN2bm1xbWgzIiwic3ViX2lkIjoiLSIsImVkaXRpb24iOiIwIiwidHlwZSI6IjIifQ.0X6Tm9JcAg8NvgDTJSon_n6RboBtGvU2aOplOT6o_8Chs7cA3-8thTbdeTZak6ly7l_ZAQ-Mf4pRmiufrT3JNG9OyvmTwCZrS0ytgCTN1NFj_KGBSxUt4b6CsiRRD9xZklcASImaOfS3aR4DtBIgIIG7iL99_bttPmz_xGViV-OzX3iI72j9VgYUzKZ7H3s4kYTY1smpFkphY_Sa3ifw18wQeJKbxTNnAXCmY-tKZcpE_Nl1CR_srCdUgDqsxeoAJ8LKeM2mJ32Jbdestw3cqoUOflG-X2DA90D1VwnnV5t3poV9DD0T_eIFfiEImFEF9AmetkuSu51heRWYeLaXbA",
         "MongoConnectionString": "mongodb://appuser:password123@localhost:27017/simpl-tasks?authSource=admin"
       }
     }

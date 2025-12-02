@@ -1,6 +1,11 @@
 @Simpl.Mobile.Mechanic.Api_HostAddress = http://localhost:5000
 
-POST {{Simpl.Mobile.Mechanic.Api_HostAddress}}/register/
-Accept: application/json
+POST {{Simpl.Mobile.Mechanic.Api_HostAddress}}/register
+Content-Type: application/json
+
+{
+    "email": "user@example.com",
+    "password": "password123"
+}
 
 ###
