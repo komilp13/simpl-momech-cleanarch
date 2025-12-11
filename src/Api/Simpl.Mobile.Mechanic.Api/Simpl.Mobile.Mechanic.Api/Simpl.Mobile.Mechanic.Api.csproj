@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="9.0.9" />
     </ItemGroup>
 
@@ -21,7 +21,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Simpl.Mobile.Mechanic.Application\Simpl.Mobile.Mechanic.Application.csproj" />
+      <ProjectReference Include="..\Simpl.Mobile.Mechanic.Core\Simpl.Mobile.Mechanic.Core.csproj" />
       <ProjectReference Include="..\Simpl.Mobile.Mechanic.DataStore\Simpl.Mobile.Mechanic.DataStore.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Models\" />
     </ItemGroup>
 
 </Project>

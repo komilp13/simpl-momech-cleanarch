@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Simpl.Mobile.Mechanic.Api.Endpoints;
 using Simpl.Mobile.Mechanic.Api.HealthChecks;
+using Simpl.Mobile.Mechanic.Core.Configuration;
 using Simpl.Mobile.Mechanic.DataStore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,7 @@ builder.Services.AddHealthChecks()
     .AddCheck<LivenessHealthCheck>("liveness")
     .AddCheck<ReadinessHealthCheck>("readiness");
 
-    // Load dependency chain
+// Load dependency chain
 Simpl.Mobile.Mechanic.Application.Startup.Load(builder.Services);
 
 
@@ -37,6 +38,13 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+
+#region Define configurations
+
+builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("JwtConfiguration"));
+
+#endregion
 
 #region Define Health Checks
 

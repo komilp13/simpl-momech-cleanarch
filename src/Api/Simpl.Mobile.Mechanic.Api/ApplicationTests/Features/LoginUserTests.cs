@@ -1,159 +1,190 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace ApplicationTests.Features;
 
 public class LoginUserTests
 {
-  private Mock<ILogger<Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler>> _loggerMock;
+    private Mock<ILogger<Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler>> _loggerMock;
 
-  [SetUp]
-  public void Setup()
-  {
-    _loggerMock = new Mock<ILogger<Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler>>();
-  }
+    [SetUp]
+    public void Setup()
+    {
+        _loggerMock = new Mock<ILogger<Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler>>();
+    }
 
-  [Test]
-  public async Task LoginUser_WithValidEmailPasswordCombo_ReturnsToken()
-  {
-    // arrange
-    var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
-    userRepoMock
-      .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
-      .ReturnsAsync(true);
+    [Test]
+    public async Task LoginUser_WithValidEmailPasswordCombo_ReturnsToken()
+    {
+        // arrange
+        var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
+        userRepoMock
+          .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
+          .ReturnsAsync(true);
 
-    var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
-      email: "test@example.com",
-      password: "Password123"
-    );
-    var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object);
+        var jwtProviderMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.Providers.IJwtProvider>();
+        jwtProviderMock
+          .Setup(provider => provider.GenerateJwtToken(It.IsAny<Claim[]>(), It.IsAny<TimeSpan>()))
+          .ReturnsAsync("mocked-jwt-token");
 
-    // act
-    var response = await handler.Handle(request);
+        var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
+          email: "test@example.com",
+          password: "Password123"
+        );
+        var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object, jwtProviderMock.Object);
 
-    // assert
-    Assert.That(response.Data, Is.Not.Null);
-    Assert.That(response.Data!.Token, Is.Not.Empty);
-    Assert.That(response.Errors, Is.Empty);
-  }
+        // act
+        var response = await handler.Handle(request);
 
-  [Test]
-  public async Task LoginUser_WithInvalidEmailPasswordCombo_ReturnsErrors()
-  {
-    // arrange
-    var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
-    userRepoMock
-      .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
-      .ReturnsAsync(false);
+        // assert
+        Assert.That(response.Data, Is.Not.Null);
+        Assert.That(response.Data!.Token, Is.Not.Empty);
+        Assert.That(response.Errors, Is.Empty);
+    }
 
-    var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
-      email: "test@example.com",
-      password: "Password123"
-    );
-    var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object);
+    [Test]
+    public async Task LoginUser_WithInvalidEmailPasswordCombo_ReturnsErrors()
+    {
+        // arrange
+        var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
+        userRepoMock
+          .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
+          .ReturnsAsync(false);
 
-    // act
-    var response = await handler.Handle(request);
+        var jwtProviderMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.Providers.IJwtProvider>();
+        jwtProviderMock
+          .Setup(provider => provider.GenerateJwtToken(It.IsAny<Claim[]>(), It.IsAny<TimeSpan>()))
+          .ReturnsAsync("mocked-jwt-token");
 
-    // assert
-    Assert.That(response.Data, Is.Null);
-    Assert.That(response.Errors, Is.Not.Empty);
-    Assert.That(response.Errors, Contains.Item("Invalid email or password"));
-  }
+        var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
+          email: "test@example.com",
+          password: "Password123"
+        );
+        var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object, jwtProviderMock.Object);
 
-  [Test]
-  public async Task LoginUser_WithInvalidEmail_ReturnsErrors()
-  {
-    // arrange
-    var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
-    userRepoMock
-      .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
-      .ReturnsAsync(false);
+        // act
+        var response = await handler.Handle(request);
 
-    var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
-      email: "tesexample.com",
-      password: "Password123"
-    );
-    var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object);
+        // assert
+        Assert.That(response.Data, Is.Null);
+        Assert.That(response.Errors, Is.Not.Empty);
+        Assert.That(response.Errors, Contains.Item("Invalid email or password"));
+    }
 
-    // act
-    var response = await handler.Handle(request);
+    [Test]
+    public async Task LoginUser_WithInvalidEmail_ReturnsErrors()
+    {
+        // arrange
+        var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
+        userRepoMock
+          .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
+          .ReturnsAsync(false);
 
-    // assert
-    Assert.That(response.Data, Is.Null);
-    Assert.That(response.Errors, Is.Not.Empty);
-    Assert.That(response.Errors, Contains.Item("Invalid email format"));
-  }
-  
-  [Test]
-  public async Task LoginUser_WithEmptyEmail_ReturnsErrors()
-  {
-    // arrange
-    var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
-    userRepoMock
-      .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
-      .ReturnsAsync(false);
+        var jwtProviderMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.Providers.IJwtProvider>();
+        jwtProviderMock
+          .Setup(provider => provider.GenerateJwtToken(It.IsAny<Claim[]>(), It.IsAny<TimeSpan>()))
+          .ReturnsAsync("mocked-jwt-token");
 
-    var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
-      email: "",
-      password: "Password123"
-    );
-    var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object);
+        var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
+          email: "tesexample.com",
+          password: "Password123"
+        );
+        var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object, jwtProviderMock.Object);
 
-    // act
-    var response = await handler.Handle(request);
+        // act
+        var response = await handler.Handle(request);
 
-    // assert
-    Assert.That(response.Data, Is.Null);
-    Assert.That(response.Errors, Is.Not.Empty);
-    Assert.That(response.Errors, Contains.Item("Email is required"));
-  }
-  
-  [Test]
-  public async Task LoginUser_WithEmptyPassword_ReturnsErrors()
-  {
-    // arrange
-    var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
-    userRepoMock
-      .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
-      .ReturnsAsync(false);
+        // assert
+        Assert.That(response.Data, Is.Null);
+        Assert.That(response.Errors, Is.Not.Empty);
+        Assert.That(response.Errors, Contains.Item("Invalid email format"));
+    }
 
-    var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
-      email: "test@example.com",
-      password: ""
-    );
-    var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object);
+    [Test]
+    public async Task LoginUser_WithEmptyEmail_ReturnsErrors()
+    {
+        // arrange
+        var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
+        userRepoMock
+          .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
+          .ReturnsAsync(false);
 
-    // act
-    var response = await handler.Handle(request);
+        var jwtProviderMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.Providers.IJwtProvider>();
+        jwtProviderMock
+          .Setup(provider => provider.GenerateJwtToken(It.IsAny<Claim[]>(), It.IsAny<TimeSpan>()))
+          .ReturnsAsync("mocked-jwt-token");
 
-    // assert
-    Assert.That(response.Data, Is.Null);
-    Assert.That(response.Errors, Is.Not.Empty);
-    Assert.That(response.Errors, Contains.Item("Password is required"));
-  }
-  
-  [Test]
-  public async Task LoginUser_WithPasswordLengthLessThan8Chars_ReturnsErrors()
-  {
-    // arrange
-    var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
-    userRepoMock
-      .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
-      .ReturnsAsync(false);
+        var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
+          email: "",
+          password: "Password123"
+        );
+        var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object, jwtProviderMock.Object);
 
-    var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
-      email: "test@example.com",
-      password: ""
-    );
-    var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object);
+        // act
+        var response = await handler.Handle(request);
 
-    // act
-    var response = await handler.Handle(request);
+        // assert
+        Assert.That(response.Data, Is.Null);
+        Assert.That(response.Errors, Is.Not.Empty);
+        Assert.That(response.Errors, Contains.Item("Email is required"));
+    }
 
-    // assert
-    Assert.That(response.Data, Is.Null);
-    Assert.That(response.Errors, Is.Not.Empty);
-    Assert.That(response.Errors, Contains.Item("Password must be at least 8 characters long"));
-  }
+    [Test]
+    public async Task LoginUser_WithEmptyPassword_ReturnsErrors()
+    {
+        // arrange
+        var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
+        userRepoMock
+          .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
+          .ReturnsAsync(false);
+
+        var jwtProviderMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.Providers.IJwtProvider>();
+        jwtProviderMock
+          .Setup(provider => provider.GenerateJwtToken(It.IsAny<Claim[]>(), It.IsAny<TimeSpan>()))
+          .ReturnsAsync("mocked-jwt-token");
+
+        var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
+          email: "test@example.com",
+          password: ""
+        );
+        var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object, jwtProviderMock.Object);
+
+        // act
+        var response = await handler.Handle(request);
+
+        // assert
+        Assert.That(response.Data, Is.Null);
+        Assert.That(response.Errors, Is.Not.Empty);
+        Assert.That(response.Errors, Contains.Item("Password is required"));
+    }
+
+    [Test]
+    public async Task LoginUser_WithPasswordLengthLessThan8Chars_ReturnsErrors()
+    {
+        // arrange
+        var userRepoMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.DataRepositories.IUserRepository>();
+        userRepoMock
+          .Setup(repo => repo.IsEmailPasswordValidAsync(It.IsAny<string>(), It.IsAny<string>()))
+          .ReturnsAsync(false);
+
+        var jwtProviderMock = new Mock<Simpl.Mobile.Mechanic.Core.Interfaces.Providers.IJwtProvider>();
+        jwtProviderMock
+          .Setup(provider => provider.GenerateJwtToken(It.IsAny<Claim[]>(), It.IsAny<TimeSpan>()))
+          .ReturnsAsync("mocked-jwt-token");
+
+        var request = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Request(
+          email: "test@example.com",
+          password: ""
+        );
+        var handler = new Simpl.Mobile.Mechanic.Application.Features.LoginUser.Handler(_loggerMock.Object, userRepoMock.Object, jwtProviderMock.Object);
+
+        // act
+        var response = await handler.Handle(request);
+
+        // assert
+        Assert.That(response.Data, Is.Null);
+        Assert.That(response.Errors, Is.Not.Empty);
+        Assert.That(response.Errors, Contains.Item("Password must be at least 8 characters long"));
+    }
 }

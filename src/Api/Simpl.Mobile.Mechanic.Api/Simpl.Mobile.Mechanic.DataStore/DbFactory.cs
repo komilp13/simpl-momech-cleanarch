@@ -12,7 +12,7 @@ public interface IDbFactory
 public sealed class DbFactory : IDbFactory
 {
     private readonly MongoSettings _settings;
-    
+
     public DbFactory(MongoSettings settings)
     {
         _settings = settings;

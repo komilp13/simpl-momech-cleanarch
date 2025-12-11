@@ -1,4 +1,6 @@
-namespace Simpl.Mobile.Mechanic.Core.Domain;
+using System;
+
+namespace Simpl.Mobile.Mechanic.Core.Interfaces.Data.Entities;
 
 public class WorkRequest
 {
@@ -11,5 +13,4 @@ public class WorkRequest
     public string? Vin { get; set; }
     public string? LicensePlate { get; set; }
     public string? IssueDescription { get; set; }
-    public Image[]? Images { get; set; }
 }
